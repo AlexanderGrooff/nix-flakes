@@ -42,9 +42,8 @@
         # This is to expose the venv in PYTHONPATH
         shellHook = ''
             # Create the venv
-            test -e "$PWD/${venvDir}" || virtualenv --no-setuptools "$PWD/${venvDir}"
+            test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python}/bin/python "$PWD/${venvDir}"
             source "$PWD/${venvDir}/bin/activate"
-            PYTHONPATH=\$PWD/\${venvDir}/\${pkgs.python.sitePackages}/:\$PYTHONPATH
         '';
       };
     });
