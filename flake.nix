@@ -1,21 +1,51 @@
 {
-  description = "A Nix-flake-based Python development environment";
+  description = "Alex Python env";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs";
 
-  outputs = { self, nixpkgs }:
+    # Access older Python versions
+    nixpkgs-python.url = "github:cachix/nixpkgs-python";
+  };
+
+  outputs =
+    { self
+    , flake-utils
+    , nixpkgs
+    , nixpkgs-python
+    }:
+    flake-utils.lib.eachDefaultSystem (system:
     let
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
-      });
+      # Define constants
+      pyVersion = "3.7";
+      venvDir = "./.venv";
+
+      overlays = [
+        (self: super: {
+          python = nixpkgs-python.packages.${system}.${pyVersion};
+        })
+      ];
+
+      pkgs = import nixpkgs { inherit overlays system; };
     in
     {
-      devShells = forEachSupportedSystem ({ pkgs }: {
-        default = pkgs.mkShell {
-          packages = with pkgs; [ python311 virtualenv ] ++
-            (with pkgs.python311Packages; [ pip ]);
-        };
-      });
-    };
+      devShells.default = pkgs.mkShell {
+        inherit venvDir;
+        # Define system packages to be present
+        buildInputs = with pkgs; [
+            python
+            virtualenv
+            libmysqlclient
+        ];
+
+        # This is to expose the venv in PYTHONPATH
+        shellHook = ''
+            # Create the venv
+            test -e "$PWD/${venvDir}" || virtualenv --no-setuptools "$PWD/${venvDir}"
+            source "$PWD/${venvDir}/bin/activate"
+            PYTHONPATH=\$PWD/\${venvDir}/\${pkgs.python.sitePackages}/:\$PYTHONPATH
+        '';
+      };
+    });
 }
