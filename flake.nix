@@ -24,7 +24,6 @@
           python37 = nixpkgs-python.packages.${system}."3.7";
           python38 = nixpkgs-python.packages.${system}."3.8";
           python39 = nixpkgs-python.packages.${system}."3.9";
-          python310 = nixpkgs-python.packages.${system}."3.10";
           python311 = nixpkgs-python.packages.${system}."3.11";
         })
       ];
@@ -75,19 +74,6 @@
           shellHook = ''
               # Create the venv
               test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python39}/bin/python "$PWD/${venvDir}"
-              source "$PWD/${venvDir}/bin/activate"
-          '';
-        };
-
-        python310 = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            virtualenv
-            libmysqlclient
-            python310
-          ];
-          shellHook = ''
-              # Create the venv
-              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python310}/bin/python "$PWD/${venvDir}"
               source "$PWD/${venvDir}/bin/activate"
           '';
         };
