@@ -17,34 +17,93 @@
     }:
     flake-utils.lib.eachDefaultSystem (system:
     let
-      # Define constants
-      pyVersion = "3.7";
       venvDir = "./.venv";
 
       overlays = [
         (self: super: {
-          python = nixpkgs-python.packages.${system}.${pyVersion};
+          python37 = nixpkgs-python.packages.${system}."3.7";
+          python38 = nixpkgs-python.packages.${system}."3.8";
+          python39 = nixpkgs-python.packages.${system}."3.9";
+          python310 = nixpkgs-python.packages.${system}."3.10";
+          python311 = nixpkgs-python.packages.${system}."3.11";
         })
       ];
 
       pkgs = import nixpkgs { inherit overlays system; };
     in
     {
-      devShells.default = pkgs.mkShell {
-        inherit venvDir;
-        # Define system packages to be present
-        buildInputs = with pkgs; [
-            python
+      devShells = {
+        default = pkgs.mkShell {
+          buildInputs = with pkgs; [
             virtualenv
             libmysqlclient
-        ];
+          ];
+        };
 
-        # This is to expose the venv in PYTHONPATH
-        shellHook = ''
-            # Create the venv
-            test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python}/bin/python "$PWD/${venvDir}"
-            source "$PWD/${venvDir}/bin/activate"
-        '';
+        python37 = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            virtualenv
+            libmysqlclient
+            python37
+          ];
+          shellHook = ''
+              # Create the venv
+              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python37}/bin/python "$PWD/${venvDir}"
+              source "$PWD/${venvDir}/bin/activate"
+          '';
+        };
+        
+        python38 = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            virtualenv
+            libmysqlclient
+            python38
+          ];
+          shellHook = ''
+              # Create the venv
+              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python38}/bin/python "$PWD/${venvDir}"
+              source "$PWD/${venvDir}/bin/activate"
+          '';
+        };
+
+        python39 = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            virtualenv
+            libmysqlclient
+            python39
+          ];
+          shellHook = ''
+              # Create the venv
+              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python39}/bin/python "$PWD/${venvDir}"
+              source "$PWD/${venvDir}/bin/activate"
+          '';
+        };
+
+        python310 = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            virtualenv
+            libmysqlclient
+            python310
+          ];
+          shellHook = ''
+              # Create the venv
+              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python310}/bin/python "$PWD/${venvDir}"
+              source "$PWD/${venvDir}/bin/activate"
+          '';
+        };
+
+        python311 = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            virtualenv
+            libmysqlclient
+            python311
+          ];
+          shellHook = ''
+              # Create the venv
+              test -e "$PWD/${venvDir}" || virtualenv --python ${pkgs.python311}/bin/python "$PWD/${venvDir}"
+              source "$PWD/${venvDir}/bin/activate"
+          '';
+        };
       };
     });
 }
