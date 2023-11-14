@@ -90,6 +90,15 @@
               source "$PWD/${venvDir}/bin/activate"
           '';
         };
+
+        rust = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            cargo
+            rustc
+            gdb
+            openssl
+          ];
+        };
       };
     });
 }
