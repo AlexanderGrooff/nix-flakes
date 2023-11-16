@@ -99,6 +99,18 @@
             openssl
           ];
         };
+
+        go = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            go
+            gotools # Go tools like goimports, godoc, and others
+            delve   # Go debugger
+            cobra-cli   # Go CLI tool generator
+            golangci-lint
+            pre-commit
+            goreleaser
+          ];
+        };
       };
     });
 }
